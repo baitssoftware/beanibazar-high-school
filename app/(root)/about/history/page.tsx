@@ -31,7 +31,7 @@ const InstituteHistory = () => {
                     alt="Preview"
                     width={200}
                     height={200}
-                    className="mt-2 object-cover rounded-md mx-auto max-h-60 w-auto"
+                    className="mt-2 object-cover w-full h-auto"
                   />
                 )}
               </div>
