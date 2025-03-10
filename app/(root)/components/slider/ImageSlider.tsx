@@ -78,7 +78,7 @@ export default function ImageSlider() {
   };
 
   return (
-    <div className="relative w-full h-[550px] overflow-hidden">
+    <div className="relative w-full h-[460px] overflow-hidden">
       {/* Static blurred background with smooth transition */}
       <div
         className="absolute inset-0 transition-[background-image] duration-1000 ease-in-out"
@@ -115,7 +115,10 @@ export default function ImageSlider() {
           </motion.div>
         </AnimatePresence>
       </div>
-
+      <div className="h-12 bg-black/30 absolute bottom-0 w-full text-xs p-2 text-white overflow-ellipsis">
+        এক নজরে বিয়ানীবাজার জামেয়া ইসলামিয়া উচ্চ বিদ্যালয় “পড় তোমার রবের নামে যিনি তোমাকে
+        সৃষ্টি করেছেন।
+      </div>
       <button
         onClick={handlePrevious}
         className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-colors"
@@ -132,7 +135,7 @@ export default function ImageSlider() {
         <ChevronRight className="w-6 h-6 text-gray-800" />
       </button>
 
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      {/* <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
         {activeImages.map((_, index) => (
           <button
             key={index}
@@ -146,7 +149,7 @@ export default function ImageSlider() {
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }

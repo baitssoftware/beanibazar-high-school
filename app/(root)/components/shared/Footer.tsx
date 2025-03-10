@@ -22,7 +22,10 @@ export default function Footer() {
   const { data: headerData, isLoading } = useGetList<HeaderData>('/info', 'info');
 
   return (
-    <footer className="bg-[#0B8B9C] text-white ">
+    <footer
+      className="bg-[#1860a7] text-white "
+      style={{ backgroundImage: `url("/VideoGallaryBg.png")` }}
+    >
       <div className="container mx-auto max-w-7xl px-4 py-16">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Left Column */}
@@ -139,7 +142,7 @@ export default function Footer() {
                   {isLoading ? (
                     <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 "></div>
                   ) : (
-                    <span>{headerData && headerData[0].school_name}</span>
+                    <span>Beanibazar Jamia Islamia High School</span>
                   )}
                 </div>
               </li>
@@ -216,8 +219,8 @@ export default function Footer() {
       <div className="bg-[#1B365C] py-4 text-center text-sm">
         <div className="container mx-auto max-w-7xl px-4">
           <p>
-            Copyright © 2021, {headerData && headerData[0]?.school_name}. All Rights Reserved.
-            <Link href="#" className="text-yellow-400 hover:underline">
+            Copyright © {new Date().getFullYear()} All Rights Reserved.{' '}
+            <Link href="http://baitsbd.com/" className="text-yellow-400 hover:underline">
               Design & Developed by Bangladesh Associate of IT Solution.
             </Link>
           </p>

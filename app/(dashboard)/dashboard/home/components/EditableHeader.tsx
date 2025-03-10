@@ -127,7 +127,7 @@ export function EditableHeader() {
     <div className="editable">
       <h2 className="heading mb-2">Header</h2>
       <Dialog>
-        <header className="py-6 pb-8 bg-[#20526B] text-white relative">
+        <header className="py-6 pb-8 bg-[#00468C] text-white relative">
           <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Image

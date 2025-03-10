@@ -48,7 +48,7 @@ const Notice = () => {
   return (
     <div className="shadow-sm">
       <div>
-        <h2 className="heading">নোটিশ বোর্ড</h2>
+        <h2 className="heading">Latest Notices</h2>
       </div>
 
       <div className="relative min-h-[400px] overflow-hidden">

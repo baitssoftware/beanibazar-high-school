@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary_school: '#20526B',
-        secondary_school: '#1B365C',
+        primary_school: '#00468C',
+        secondary_school: '#1860a7',
         dashboard_primary: '#215294',
         dashboard_secondary: '#00BDC5',
         background: 'hsl(var(--background))',

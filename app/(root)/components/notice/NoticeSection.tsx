@@ -1,7 +1,7 @@
 'use client';
 
 import { useGetList } from '@/hooks/APIHooks';
-import { CircleIcon } from 'lucide-react';
+import { BellDot } from 'lucide-react';
 import Link from 'next/link';
 import Marquee from 'react-fast-marquee';
 
@@ -15,7 +15,7 @@ const NoticeSection = () => {
 
   return (
     <div className="mx-auto bg-white text-bengali py-3">
-      <div className="border flex items-center overflow-hidden">
+      <div className=" shadow-xl shadow-primary_school/10 border border-primary_school flex items-center overflow-hidden">
         <div
           className="bg-primary_school text-white py-3 px-6 border border-primary_school"
           style={{
@@ -24,17 +24,20 @@ const NoticeSection = () => {
             backgroundSize: 'cover',
           }}
         >
-          <p className="font-semibold">নোটিশ</p>
+          <p className="font-semibold">Notices</p>
         </div>
         <div>
           <Marquee pauseOnHover>
             {noticeData?.map((notice, idx) => (
               <div key={idx} style={{ marginRight: '20px' }}>
                 <Link
-                  className="flex items-center gap-2 text-xl"
+                  className="flex items-center gap-2 text-"
                   href={`/notice`} // Redirecting to notice details page
                 >
-                  <CircleIcon /> {notice?.title}
+                  <div className="h-full p-3 bg-red-400 text-white">
+                    <BellDot className="w-4 h-4" />
+                  </div>{' '}
+                  {notice?.title}
                 </Link>
               </div>
             ))}

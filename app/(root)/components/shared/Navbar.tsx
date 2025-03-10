@@ -38,7 +38,10 @@ export default function Navbar() {
 
   return (
     <div className="flex flex-col w-full">
-      <header className="py-6 pb-8 bg-[#20526B] text-white">
+      <header
+        className="py-6 pb-8 bg-[#00468C] text-white"
+        style={{ backgroundImage: `url("/VideoGallaryBg.png")` }}
+      >
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="">
@@ -60,7 +63,7 @@ export default function Navbar() {
                 {isLoading ? (
                   <TitleSkeleton className="h-5 w-60" />
                 ) : (
-                  <h1>{headerData && headerData[0]?.school_name}</h1>
+                  <h1>Beanibazar Jamia Islamia High School</h1>
                 )}
               </div>
               <div className="">
@@ -98,8 +101,8 @@ export default function Navbar() {
                 >
                   {item.items ? (
                     <button
-                      className={`inline-flex items-center px-3 py-5 text-sm font-medium transition-colors hover:bg-[#20526B] hover:text-white
-                      ${activeMenu === item.title ? 'bg-[#20526B] text-white' : 'text-gray-700'}
+                      className={`inline-flex items-center px-3 py-5 text-sm font-medium transition-colors hover:bg-[#00468C] hover:text-white
+                      ${activeMenu === item.title ? 'bg-[#00468C] text-white' : 'text-gray-700'}
                     `}
                       aria-expanded={activeMenu === item.title}
                       aria-haspopup="true"
@@ -110,8 +113,8 @@ export default function Navbar() {
                   ) : (
                     <Link
                       href={item.href || '#'}
-                      className={`inline-flex items-center px-3 py-5 text-sm font-medium transition-colors hover:bg-[#20526B] hover:text-white
-                      ${activeMenu === item.title ? 'bg-[#20526B] text-white' : 'text-gray-700'}
+                      className={`inline-flex items-center px-3 py-5 text-sm font-medium transition-colors hover:bg-[#00468C] hover:text-white
+                      ${activeMenu === item.title ? 'bg-[#00468C] text-white' : 'text-gray-700'}
                     `}
                     >
                       {item.title}
@@ -128,7 +131,7 @@ export default function Navbar() {
                         <Link
                           key={subItem.title}
                           href={subItem.href}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#20526B] hover:text-white"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#00468C] hover:text-white"
                           role="menuitem"
                         >
                           {subItem.title}
