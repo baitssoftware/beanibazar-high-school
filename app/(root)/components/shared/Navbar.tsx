@@ -193,7 +193,7 @@ export default function Navbar() {
                       Software Login
                     </a>
                     <Link
-                      href="/admin/login"
+                      href="/login"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#00468C] hover:text-white"
                       role="menuitem"
                     >

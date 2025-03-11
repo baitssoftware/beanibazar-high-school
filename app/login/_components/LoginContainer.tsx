@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCreate } from '@/hooks/APIHooks';
 import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -151,15 +150,6 @@ export default function LoginPage() {
             </Button>
           </div>
         </form>
-
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Don&#39;t have an account?{' '}
-            <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
-              Sign up
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   );
