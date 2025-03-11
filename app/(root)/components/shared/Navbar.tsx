@@ -143,12 +143,65 @@ export default function Navbar() {
               ))}
             </div>
             <div className="flex items-center space-x-4">
-              <Link
-                href="/login"
-                className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800"
+              <div
+                className="relative"
+                onMouseEnter={() => setActiveMenu('login')}
+                onMouseLeave={() => setActiveMenu(null)}
               >
-                LOGIN
-              </Link>
+                <button
+                  className={`inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800
+                    ${activeMenu === 'login' ? 'text-red-800' : ''}
+                  `}
+                  aria-expanded={activeMenu === 'login'}
+                  aria-haspopup="true"
+                >
+                  LOGIN
+                  <ChevronDown className="ml-1 h-4 w-4" />
+                </button>
+                {activeMenu === 'login' && (
+                  <div
+                    className="absolute right-0 mt-0 w-60 bg-white border shadow-lg z-50"
+                    role="menu"
+                    aria-orientation="vertical"
+                    aria-labelledby="login-menu"
+                  >
+                    <a
+                      href="https://student.example.com/login"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#00468C] hover:text-white"
+                      role="menuitem"
+                    >
+                      Student/Guardian Login
+                    </a>
+                    <a
+                      href="https://teacher.example.com/login"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#00468C] hover:text-white"
+                      role="menuitem"
+                    >
+                      Teacher Login
+                    </a>
+                    <a
+                      href="https://software.example.com/login"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#00468C] hover:text-white"
+                      role="menuitem"
+                    >
+                      Software Login
+                    </a>
+                    <Link
+                      href="/admin/login"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#00468C] hover:text-white"
+                      role="menuitem"
+                    >
+                      Website Admin Login
+                    </Link>
+                  </div>
+                )}
+              </div>
               <Link
                 href="/apply"
                 className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800"
