@@ -1,6 +1,7 @@
 'use client';
 import ImageSkeleton from '@/components/shared/skeleton/ImageSkeleton';
 import ParagraphSkeleton from '@/components/shared/skeleton/ParagraphSkeleton';
+import TitleSkeleton from '@/components/shared/skeleton/TitleSkeleton';
 import { useGetList } from '@/hooks/APIHooks';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -40,6 +41,26 @@ interface IAchievementData {
   category: string;
   year: string;
 }
+interface ChairmanMessage {
+  _id: string;
+  message: string;
+  image: string;
+  name: string;
+  facebookURL?: string;
+  instagramURL?: string;
+  tweeterURL?: string;
+  youtubeURL?: string;
+}
+interface PrincipalMessage {
+  _id: string;
+  message: string;
+  image: string;
+  name: string;
+  facebookURL?: string;
+  instagramURL?: string;
+  tweeterURL?: string;
+  youtubeURL?: string;
+}
 
 const Home = () => {
   const { data: historyData, isLoading } = useGetList<HistoryData>('/history', 'history');
@@ -56,6 +77,16 @@ const Home = () => {
     '/achievements',
     'achievements',
   );
+  const { data: chairmanData, isLoading: isChairmanLoading } = useGetList<ChairmanMessage>(
+    '/chairman-message',
+    'chairman-message',
+  );
+  const chairmanMessage = chairmanData?.[0];
+  const { data: principalData, isLoading: isPrincipalLoading } = useGetList<PrincipalMessage>(
+    '/principal-message',
+    'principal-message',
+  );
+  const principalMessage = principalData?.[0];
   return (
     <section>
       <NoticeSection />
@@ -63,32 +94,56 @@ const Home = () => {
         <div className="grid grid-cols-11 gap-4 py-4 ">
           <div className="col-span-2 text-center border border-primary_school py-2.5 flex flex-col items-center justify-around shadow-xl shadow-primary_school/10">
             <div className="mx-auto flex flex-col items-center justify-center ">
-              <Image
-                src={'/chairman.jpg'}
-                alt="school logo"
-                width={100}
-                height={100}
-                className="h-32 w-auto mb-4"
-              />
+              {isChairmanLoading ? (
+                <ImageSkeleton className="h-32 w-auto mb-4" />
+              ) : (
+                <Image
+                  src={
+                    `${process.env.NEXT_PUBLIC_IMAGE_URL}/${chairmanMessage?.image}` ||
+                    '/placeholder.svg'
+                  }
+                  priority
+                  alt={`Image of ${chairmanMessage?.name}`}
+                  width={100}
+                  height={100}
+                  className="h-32 w-auto mb-4"
+                />
+              )}
 
               <p className="text-sm px-2">
-                মাওলানা ফয়জুল ইসলাম <br />
+                {isChairmanLoading ? (
+                  <TitleSkeleton className="h-5 w-60" />
+                ) : (
+                  <h1>{chairmanMessage?.name}</h1>
+                )}
                 চেয়ারম্যান, জিলালুল কুরআন সোসাইটি
               </p>
             </div>
             {/* Divider */}
             <div className="w-full h-0.5 bg-gray-200"></div>
             <div className="mx-auto flex flex-col items-center justify-center mt-5\pt-3">
-              <Image
-                src={'/chairman.jpg'}
-                alt="school logo"
-                width={100}
-                height={100}
-                className="h-32 w-auto mb-4"
-              />
+              {isPrincipalLoading ? (
+                <ImageSkeleton className="h-32 w-auto mb-4" />
+              ) : (
+                <Image
+                  priority
+                  src={
+                    `${process.env.NEXT_PUBLIC_IMAGE_URL}/${principalMessage?.image}` ||
+                    '/placeholder.svg'
+                  }
+                  alt={principalMessage?.name || 'Principal'}
+                  width={100}
+                  height={100}
+                  className="h-32 w-auto mb-4"
+                />
+              )}
 
               <p className="text-sm px-2">
-                মোঃ রুকন উদ্দিন, <br />
+                {isPrincipalLoading ? (
+                  <TitleSkeleton className="h-5 w-60" />
+                ) : (
+                  <h1>{principalMessage?.name}</h1>
+                )}
                 প্রধান শিক্ষক
               </p>
             </div>
@@ -349,10 +404,10 @@ const Home = () => {
         </div>
 
         {/* Divider */}
-        <div className="w-full h-0.5 bg-gray-200"></div>
+        {/* <div className="w-full h-0.5 bg-gray-200"></div> */}
 
         {/* Why Choose */}
-        <div className="py-4">
+        {/* <div className="py-4">
           <h2 className="heading">Why Choose</h2>
           <div className="p-4 flex justify-center gap-4">
             <div className="hexagon-image">
@@ -383,7 +438,7 @@ const Home = () => {
               />
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Divider */}
         <div className="w-full h-0.5 bg-gray-200"></div>

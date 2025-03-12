@@ -1,7 +1,7 @@
 'use client';
 
 import { useGetList } from '@/hooks/APIHooks';
-import { ThumbnailGallery } from './ImageVideosThumbnail/ThumbnailGallery';
+import { ThumbnailGallery } from './Image & Vids Thumbnail/ThumbnailGallery';
 
 interface Photo {
   _id: string;
