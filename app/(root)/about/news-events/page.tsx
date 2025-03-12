@@ -56,6 +56,7 @@ const NewsNEvents = () => {
               >
                 <div className="col-span-2 ">
                   <Image
+                    priority
                     src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${sEvent ? sEvent?.image : 'logo/logo.jpg'}`}
                     alt="school logo"
                     className="h-32 w-auto object-cover"

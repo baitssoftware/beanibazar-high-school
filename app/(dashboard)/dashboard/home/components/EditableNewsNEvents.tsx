@@ -150,7 +150,6 @@ const EditableNewsNEvents = () => {
       row: (data: EventData) => (
         <div className="flex gap-5 items-center">
           <Image
-            priority
             className="w-16 h-12 object-cover"
             src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${data.image}`}
             alt="Event image"
@@ -246,8 +245,11 @@ const EditableNewsNEvents = () => {
               />
               {currentEvent?.image && (
                 <Image
-                  priority
-                  src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${currentEvent.image}`}
+                  src={
+                    currentEvent.image.startsWith('blob:')
+                      ? currentEvent.image
+                      : `${process.env.NEXT_PUBLIC_IMAGE_URL}/${currentEvent.image}`
+                  }
                   alt="Preview"
                   width={200}
                   height={200}

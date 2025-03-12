@@ -1,11 +1,25 @@
+'use client';
+import ImageSkeleton from '@/components/shared/skeleton/ImageSkeleton';
+import ParagraphSkeleton from '@/components/shared/skeleton/ParagraphSkeleton';
+import { useGetList } from '@/hooks/APIHooks';
 import Image from 'next/image';
+import Link from 'next/link';
 import AllNotices from './components/home/AllNotice';
 import InstituteSidebar from './components/home/InstituteInformation';
 import Notice from './components/home/Notice';
 import NoticeSection from './components/notice/NoticeSection';
 import ImageSlider from './components/slider/ImageSlider';
 
+interface HistoryData {
+  _id: string;
+  title: string;
+  image: string;
+  description: string;
+}
+
 const Home = () => {
+  const { data: historyData, isLoading } = useGetList<HistoryData>('/history', 'history');
+  const history = historyData && historyData[0];
   return (
     <section>
       <NoticeSection />
@@ -79,30 +93,41 @@ const Home = () => {
           <div className="shadow-xl shadow-primary_school/10 border border-primary_school">
             <h2 className="heading">About School</h2>
             <div className="p-4 overflow-hidden">
-              <div className="float-left mr-4 w-1/3">
-                <div className="bg-yellow-100 p-2">
-                  <Image
-                    src={'/building.jpg'}
-                    alt="school building"
-                    width={150}
-                    height={100}
-                    className="w-full h-28 my-2"
-                  />
-                  <p className="text-xs text-center">স্থাপিত: ০২-০১-২০১৮</p>
+              {isLoading ? (
+                <ImageSkeleton className="h-40 w-11/12 mx-auto" />
+              ) : (
+                <div className="float-left mr-4 w-1/3">
+                  <div className="bg-yellow-100 p-2">
+                    {history?.image && (
+                      <Image
+                        priority
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${history.image}`}
+                        alt="school building"
+                        width={150}
+                        height={100}
+                        className="w-full h-28 my-2"
+                      />
+                    )}
+                    {/* <p className="text-xs text-center">স্থাপিত: ০২-০১-২০১৮</p> */}
+                  </div>
                 </div>
-              </div>
+              )}
+
               <div>
-                <p className="text-sm mb-3">
-                  এক নজরে বিয়ানীবাজার জামেয়া ইসলামিয়া উচ্চ বিদ্যালয় পড় তোমার রবের নামে যিনি
-                  তোমাকে সৃষ্টি করেছেন। তিনি আলাক (জমাট রক্তের পিছ) থেকে মানুষ সৃষ্টি করেছেন। পড়
-                  এবং তোমার রব বড়ই দয়ালু। যিনি কলমের সাহায্যে শিক্ষা দিয়েছেন। মানুষকে এমন জ্ঞান
-                  শিক্ষা দিয়েছেন যাহা সে জানতো না। (সুরা আল-আলাকঃ ১-৫) ১৯৮৭ সালে বিয়ানীবাজারের
-                  কতিপয় চিন্তাশীল ও উদ্যমী ব্যক্তি জিলালুল কুরআন সোসাইটি নামে একটি সামাজিক সংস্থা
-                  গঠন করেন।
-                </p>
-                <a href="#" className="bg-yellow-400 text-xs px-2 py-1 rounded-full inline-block">
+                {isLoading ? (
+                  <p className="text-sm mb-3">
+                    <ParagraphSkeleton line={6} />
+                  </p>
+                ) : (
+                  <p className="text-sm mb-3">{history?.description?.slice(0, 450)}</p>
+                )}
+
+                <Link
+                  href="/history"
+                  className="bg-yellow-400 text-xs px-2 py-1 rounded-full inline-block"
+                >
                   Read More →
-                </a>
+                </Link>
               </div>
             </div>
           </div>

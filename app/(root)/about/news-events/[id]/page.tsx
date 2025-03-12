@@ -58,6 +58,7 @@ const NewsNEventsDetails = () => {
           <div className={' gap-4'}>
             <div className="col-span-2 ">
               <Image
+                priority
                 src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${sEvent ? sEvent?.data?.image : 'logo/logo.jpg'}`}
                 alt="school logo"
                 className="h-auto w-full object-cover"
