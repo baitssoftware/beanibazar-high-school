@@ -1,5 +1,7 @@
 'use client';
 
+import type React from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,8 +25,9 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreate, useDelete, useGetList, useUpdate } from '@/hooks/APIHooks';
 import { toast } from '@/hooks/use-toast';
-import { BookOpen, Edit, Medal, Trash, Trophy, Users } from 'lucide-react';
-import { useState } from 'react';
+import { BookOpen, Edit, Medal, Trash, Trophy, Upload, Users } from 'lucide-react';
+import Image from 'next/image';
+import { useCallback, useState } from 'react';
 
 interface Achievement {
   _id: string;
@@ -32,6 +35,7 @@ interface Achievement {
   description: string;
   year: string;
   category: 'academic' | 'sports' | 'extracurricular';
+  image: string;
 }
 
 export default function AchievementsDashboard() {
@@ -44,25 +48,28 @@ export default function AchievementsDashboard() {
     refetch,
   } = useGetList<Achievement>('/achievements', 'achievements');
 
-  const { mutateAsync: createAchievement } = useCreate<Achievement>(
+  const { mutateAsync: createAchievement, isPending: isCreating } = useCreate(
     '/achievements',
     'achievements',
   );
-  const { mutateAsync: updateAchievement } = useUpdate<Achievement>(
+  const { mutateAsync: updateAchievement, isPending: isUpdating } = useUpdate<Achievement>(
     '/achievements',
     'achievements',
   );
-  const { mutateAsync: deleteAchievement } = useDelete('/achievements', 'achievements');
+  const { mutateAsync: deleteAchievement, isPending: isDeleting } = useDelete(
+    '/achievements',
+    'achievements',
+  );
 
   const filteredAchievements =
     selectedCategory === 'all'
       ? achievements
       : achievements?.filter((a) => a.category === selectedCategory);
 
-  const handleCreateAchievement = async (achievementData: Omit<Achievement, '_id'>) => {
+  const handleCreateAchievement = async (formData: FormData) => {
     try {
       await createAchievement({
-        body: achievementData as Achievement,
+        body: formData,
         callbacks: {
           onSuccess: () => {
             toast({ title: 'সফল', description: 'অর্জন সফলভাবে যোগ করা হয়েছে' });
@@ -82,11 +89,11 @@ export default function AchievementsDashboard() {
     }
   };
 
-  const handleUpdateAchievement = async (id: string, achievementData: Omit<Achievement, '_id'>) => {
+  const handleUpdateAchievement = async (id: string, formData: FormData) => {
     try {
       await updateAchievement({
         id,
-        body: achievementData,
+        body: formData as unknown as Achievement,
         callbacks: {
           onSuccess: () => {
             toast({ title: 'সফল', description: 'অর্জন সফলভাবে আপডেট করা হয়েছে' });
@@ -140,7 +147,7 @@ export default function AchievementsDashboard() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">অর্জনসমূহ</h1>
-        <AddAchievementModal onAddAchievement={handleCreateAchievement} />
+        <AddAchievementModal onAddAchievement={handleCreateAchievement} isCreating={isCreating} />
       </div>
 
       <Tabs defaultValue="all" className="w-full mb-6" onValueChange={setSelectedCategory}>
@@ -165,6 +172,7 @@ export default function AchievementsDashboard() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setEditingAchievement(achievement)}
+                  disabled={isUpdating}
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
@@ -172,12 +180,27 @@ export default function AchievementsDashboard() {
                   variant="ghost"
                   size="sm"
                   onClick={() => handleDeleteAchievement(achievement._id)}
+                  disabled={isDeleting}
                 >
                   <Trash className="h-4 w-4 text-red-500" />
                 </Button>
               </div>
             </CardHeader>
             <CardContent className="flex-grow">
+              {achievement.image && (
+                <div className="mb-3">
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${achievement.image}`}
+                    alt={achievement.title}
+                    width={300}
+                    height={200}
+                    className="w-full h-40 object-cover rounded-md"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg?height=200&width=300';
+                    }}
+                  />
+                </div>
+              )}
               <p className="text-sm text-muted-foreground mb-2">{achievement.description}</p>
               <div className="flex justify-between items-center mt-4">
                 <Badge variant="secondary">{achievement.year}</Badge>
@@ -193,6 +216,7 @@ export default function AchievementsDashboard() {
           achievement={editingAchievement}
           onUpdateAchievement={handleUpdateAchievement}
           onClose={() => setEditingAchievement(null)}
+          isUpdating={isUpdating}
         />
       )}
     </div>
@@ -210,27 +234,112 @@ const AchievementForm = ({
   initialData,
   onSubmit,
   submitText,
+  isSubmitting,
 }: {
   initialData?: Achievement;
-  onSubmit: (data: Omit<Achievement, '_id'>) => void;
+  onSubmit: (formData: FormData) => void;
   submitText: string;
+  isSubmitting: boolean;
 }) => {
   const [formData, setFormData] = useState<AchievementFormData>({
     title: initialData?.title || '',
     description: initialData?.description || '',
-    year: initialData?.year || '',
+    year: initialData?.year || new Date().getFullYear().toString(),
     category: initialData?.category || 'academic',
   });
 
+  const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      // Revoke previous object URL to avoid memory leaks
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      const newPreviewUrl = URL.createObjectURL(selectedFile);
+      setPreviewUrl(newPreviewUrl);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    // Validation
+    if (!formData.title.trim()) {
+      toast({
+        title: 'ত্রুটি',
+        description: 'শিরোনাম প্রয়োজন',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!formData.description.trim()) {
+      toast({
+        title: 'ত্রুটি',
+        description: 'বিবরণ প্রয়োজন',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!formData.year.trim()) {
+      toast({
+        title: 'ত্রুটি',
+        description: 'বছর প্রয়োজন',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!initialData && !file) {
+      toast({
+        title: 'ত্রুটি',
+        description: 'ছবি প্রয়োজন',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const submitFormData = new FormData();
+    submitFormData.append('title', formData.title);
+    submitFormData.append('description', formData.description);
+    submitFormData.append('year', formData.year);
+    submitFormData.append('category', formData.category);
+
+    if (file) {
+      submitFormData.append('image', file);
+    }
+
+    onSubmit(submitFormData);
   };
+
+  // Clean up preview URL when component unmounts
+  const cleanupPreview = useCallback(() => {
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+  }, [previewUrl]);
+
+  // Clean up on unmount
+  useState(() => {
+    return () => {
+      cleanupPreview();
+    };
+  });
+
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 50 }, (_, i) => (currentYear - i).toString());
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="title">শিরোনাম</Label>
+        <Label htmlFor="title">
+          শিরোনাম <span className="text-red-500">*</span>
+        </Label>
         <Input
           id="title"
           value={formData.title}
@@ -240,66 +349,158 @@ const AchievementForm = ({
       </div>
 
       <div>
-        <Label htmlFor="description">বিবরণ</Label>
+        <Label htmlFor="description">
+          বিবরণ <span className="text-red-500">*</span>
+        </Label>
         <Textarea
           id="description"
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           required
+          rows={4}
         />
       </div>
 
-      <div>
-        <Label htmlFor="year">বছর</Label>
-        <Input
-          id="year"
-          value={formData.year}
-          onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-          required
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="year">
+            বছর <span className="text-red-500">*</span>
+          </Label>
+          <Select
+            value={formData.year}
+            onValueChange={(value) => setFormData({ ...formData, year: value })}
+          >
+            <SelectTrigger id="year">
+              <SelectValue placeholder="বছর নির্বাচন করুন" />
+            </SelectTrigger>
+            <SelectContent>
+              {yearOptions.map((year) => (
+                <SelectItem key={year} value={year}>
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label htmlFor="category">
+            ক্যাটাগরি <span className="text-red-500">*</span>
+          </Label>
+          <Select
+            value={formData.category}
+            onValueChange={(value: 'academic' | 'sports' | 'extracurricular') =>
+              setFormData({ ...formData, category: value })
+            }
+          >
+            <SelectTrigger id="category">
+              <SelectValue placeholder="ক্যাটাগরি নির্বাচন করুন" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="academic">একাডেমিক</SelectItem>
+              <SelectItem value="sports">ক্রীড়া</SelectItem>
+              <SelectItem value="extracurricular">সহপাঠ্যক্রম</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div>
-        <Label htmlFor="category">ক্যাটাগরি</Label>
-        <Select
-          value={formData.category}
-          onValueChange={(value: 'academic' | 'sports' | 'extracurricular') =>
-            setFormData({ ...formData, category: value })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="ক্যাটাগরি নির্বাচন করুন" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="academic">একাডেমিক</SelectItem>
-            <SelectItem value="sports">ক্রীড়া</SelectItem>
-            <SelectItem value="extracurricular">সহপাঠ্যক্রম</SelectItem>
-          </SelectContent>
-        </Select>
+        <Label htmlFor="image">ছবি {!initialData && <span className="text-red-500">*</span>}</Label>
+
+        <div className="mt-2 grid gap-4">
+          <div className="flex items-center gap-4">
+            <div className="relative flex-1">
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="absolute inset-0 opacity-0 cursor-pointer z-10"
+              />
+              <Button
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2"
+                type="button"
+              >
+                <Upload className="h-4 w-4" />
+                {file ? 'ছবি পরিবর্তন করুন' : 'ছবি আপলোড করুন'}
+              </Button>
+            </div>
+            {file && (
+              <div className="text-sm text-muted-foreground">
+                {file.name} ({Math.round(file.size / 1024)} KB)
+              </div>
+            )}
+          </div>
+
+          <div className="mt-2">
+            {(previewUrl || initialData?.image) && (
+              <div className="relative border rounded-md p-2 mt-2">
+                <p className="text-sm text-muted-foreground mb-2">ছবি প্রিভিউ:</p>
+                <Image
+                  src={
+                    previewUrl ||
+                    (initialData?.image
+                      ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${initialData.image}`
+                      : '/placeholder.svg?height=200&width=300')
+                  }
+                  alt="Preview"
+                  width={300}
+                  height={200}
+                  className="object-cover rounded-md h-[200px] w-full"
+                  onError={(e) => {
+                    e.currentTarget.src = '/placeholder.svg?height=200&width=300';
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      <Button type="submit" className="w-full">
-        {submitText}
-      </Button>
+      <div className="flex justify-end gap-2 pt-2">
+        <Button type="submit" disabled={isSubmitting} className="w-full">
+          {isSubmitting ? 'প্রক্রিয়াকরণ হচ্ছে...' : submitText}
+        </Button>
+      </div>
     </form>
   );
 };
 
 const AddAchievementModal = ({
   onAddAchievement,
+  isCreating,
 }: {
-  onAddAchievement: (data: Omit<Achievement, '_id'>) => Promise<void>;
+  onAddAchievement: (formData: FormData) => Promise<void>;
+  isCreating: boolean;
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+  };
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button>নতুন অর্জন যোগ করুন</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>নতুন অর্জন যোগ করুন</DialogTitle>
         </DialogHeader>
-        <AchievementForm onSubmit={onAddAchievement} submitText="যোগ করুন" />
+        <AchievementForm
+          onSubmit={(formData) => {
+            onAddAchievement(formData).then(() => {
+              if (!isCreating) {
+                setIsOpen(false);
+              }
+            });
+          }}
+          submitText="যোগ করুন"
+          isSubmitting={isCreating}
+        />
       </DialogContent>
     </Dialog>
   );
@@ -309,18 +510,20 @@ const EditAchievementModal = ({
   achievement,
   onUpdateAchievement,
   onClose,
+  isUpdating,
 }: {
   achievement: Achievement;
-  onUpdateAchievement: (id: string, data: Omit<Achievement, '_id'>) => Promise<void>;
+  onUpdateAchievement: (id: string, formData: FormData) => Promise<void>;
   onClose: () => void;
+  isUpdating: boolean;
 }) => {
-  const handleSubmit = (data: Omit<Achievement, '_id'>) => {
-    onUpdateAchievement(achievement._id, data);
+  const handleSubmit = (formData: FormData) => {
+    onUpdateAchievement(achievement._id, formData);
   };
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>অর্জন সম্পাদনা করুন</DialogTitle>
         </DialogHeader>
@@ -328,6 +531,7 @@ const EditAchievementModal = ({
           initialData={achievement}
           onSubmit={handleSubmit}
           submitText="আপডেট করুন"
+          isSubmitting={isUpdating}
         />
       </DialogContent>
     </Dialog>
