@@ -23,15 +23,15 @@ const NoticeCard = ({ data }: { data: any }) => {
 
   const pathName = usePathname();
   return (
-    <div className="flex  flex-col gap-5 relative w-full justify-between items-center bg-orange-50 max-w-[900px] p-4 border-2 border-orange-500 rounded-md my-3 ">
+    <div className="flex  flex-col gap-5 relative w-full justify-between items-center bg-orange-50  p-4 border-2 border-orange-500 rounded-md my-3 ">
       <div className="flex  justify-between items-center w-full">
         <div className="notice-card-left">
-          <h2 className="text-3xl mb-2 font-extrabold text-black">
+          <h2 className="text- mb-2 font-semibold text-black">
             {data?.title || data?.notice_title}
           </h2>
-          <p>
+          <p className="text-xs ">
             প্রকাশের তারিখ:{' '}
-            <span className="text-red-600">{formattedDate || data?.publish_date}</span>{' '}
+            <span className="text-xs text-red-600">{formattedDate || data?.publish_date}</span>{' '}
           </p>
         </div>
         <div className="notice-card-right">

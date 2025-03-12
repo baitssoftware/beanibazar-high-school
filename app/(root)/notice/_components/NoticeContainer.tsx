@@ -3,8 +3,8 @@
 'use client';
 import { useGetList } from '@/hooks/APIHooks';
 import { usePathname } from 'next/navigation';
-import NoticeCard from './NoticeCard';
 import NoticeUploadModal from './Modal/AddNoticeModal';
+import NoticeCard from './NoticeCard';
 
 const NoticeContainer = () => {
   const { data: noticeDataFromDatabase, isLoading }: { data: any; isLoading: boolean } = useGetList(
@@ -30,7 +30,7 @@ const NoticeContainer = () => {
     <div className="flex flex-col gap-4  justify-center items-center py-10 ">
       {/* --- Admin Button --- */}
       {pathName.includes('dashboard') && <NoticeUploadModal />}
-
+      <h2 className="heading w-full">Notice</h2>
       {content}
     </div>
   );

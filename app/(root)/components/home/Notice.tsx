@@ -59,17 +59,17 @@ const Notice = () => {
           {notices?.map((notice, index) => (
             <div
               key={`${notice.createdAt}_${index}`}
-              className="h-[100px] p-4 my-3 bg-orange-100 rounded-lg border-b hover:bg-gray-50 cursor-pointer"
+              className=" p-4 mb-3 bg-primary_school/15 border-b hover:bg-gray-50 cursor-pointer"
               onClick={() => handleNoticeClick()} // Attach click handler
             >
               <div className="h-full flex flex-col justify-between ps-6 relative">
                 <span className="absolute top-2 -left-1">
-                  <ChevronRight className="inline w-5 mb-1 text-yellow-600" />
+                  <ChevronRight className="inline w-5 mb-1 text-primary_school" />
                 </span>
-                <p className="text-sm md:text-base text-red-900 line-clamp-2 font-bold">
+                <p className="text-xs text-primary_school line-clamp-2 font-semibold">
                   {notice.title}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-xs text-gray-500">
                   প্রকাশের তারিখ: {formatDate(notice.createdAt)}
                 </p>
               </div>

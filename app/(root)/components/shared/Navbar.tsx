@@ -166,7 +166,7 @@ export default function Navbar() {
                     aria-labelledby="login-menu"
                   >
                     <a
-                      href="https://student.example.com/login"
+                      href="https://academichelperbd.com/login"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#00468C] hover:text-white"
@@ -175,7 +175,7 @@ export default function Navbar() {
                       Student/Guardian Login
                     </a>
                     <a
-                      href="https://teacher.example.com/login"
+                      href="https://academichelperbd.com/login"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#00468C] hover:text-white"
@@ -184,7 +184,7 @@ export default function Navbar() {
                       Teacher Login
                     </a>
                     <a
-                      href="https://software.example.com/login"
+                      href="https://academichelperbd.com/login"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#00468C] hover:text-white"
