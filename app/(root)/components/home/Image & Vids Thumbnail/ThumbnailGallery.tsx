@@ -17,7 +17,7 @@ export function ThumbnailGallery({ images = [], maxDisplay = 4, category }: Thum
 
   return (
     <div
-      className="relative overflow-hidden rounded-lg"
+      className="relative overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

@@ -2,9 +2,11 @@
 import ImageSkeleton from '@/components/shared/skeleton/ImageSkeleton';
 import ParagraphSkeleton from '@/components/shared/skeleton/ParagraphSkeleton';
 import { useGetList } from '@/hooks/APIHooks';
+import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import AllNotices from './components/home/AllNotice';
+import ImageNVideoGallery from './components/home/ImageNVideoGallery';
 import InstituteSidebar from './components/home/InstituteInformation';
 import Notice from './components/home/Notice';
 import NoticeSection from './components/notice/NoticeSection';
@@ -16,10 +18,44 @@ interface HistoryData {
   image: string;
   description: string;
 }
+interface Feature {
+  id: string;
+  title: string;
+
+  description: string;
+  image: string;
+}
+interface TNewsData {
+  _id: string;
+  image: string;
+  title: string;
+  description: string;
+  createdAt: string;
+}
+interface IAchievementData {
+  _id: string;
+  title: string;
+  description: string;
+  image: string;
+  category: string;
+  year: string;
+}
 
 const Home = () => {
   const { data: historyData, isLoading } = useGetList<HistoryData>('/history', 'history');
   const history = historyData && historyData[0];
+  const { data: features, isLoading: isFeaturesLoading } = useGetList<Feature>(
+    '/features',
+    'features',
+  );
+  const { data: schoolEvents, isLoading: isNewsEventsLoading } = useGetList<TNewsData>(
+    '/news-events',
+    'news-events',
+  );
+  const { data: achievements, isLoading: isAchievementsLoading } = useGetList<IAchievementData>(
+    '/achievements',
+    'achievements',
+  );
   return (
     <section>
       <NoticeSection />
@@ -94,7 +130,14 @@ const Home = () => {
             <h2 className="heading">About School</h2>
             <div className="p-4 overflow-hidden">
               {isLoading ? (
-                <ImageSkeleton className="h-40 w-11/12 mx-auto" />
+                <div className="p-4 overflow-hidden grid grid-cols-5 gap-4">
+                  <div className="col-span-2">
+                    <ImageSkeleton className="h-40 w-11/12 mx-auto" />
+                  </div>
+                  <div className="col-span-3">
+                    <ParagraphSkeleton line={6} />
+                  </div>
+                </div>
               ) : (
                 <div className="float-left mr-4 w-1/3">
                   <div className="bg-yellow-100 p-2">
@@ -105,7 +148,7 @@ const Home = () => {
                         alt="school building"
                         width={150}
                         height={100}
-                        className="w-full h-28 my-2"
+                        className="float-left mr-4 w-1/3 h-auto object-cover border border-gray-200"
                       />
                     )}
                     {/* <p className="text-xs text-center">স্থাপিত: ০২-০১-২০১৮</p> */}
@@ -134,30 +177,48 @@ const Home = () => {
 
           {/* Features of School */}
           <div className="shadow-xl shadow-primary_school/10 border border-primary_school">
-            <h2 className="heading">News & Events</h2>
+            <h2 className="heading"> Features of School</h2>
             <div className="p-4 overflow-hidden">
-              <Image
-                src={'/feature.jpg'}
-                alt="News event"
-                width={150}
-                height={120}
-                className="float-left mr-4 w-1/3 h-auto object-cover border border-gray-200"
-              />
+              {isFeaturesLoading ? (
+                <div className="p-4 overflow-hidden grid grid-cols-5 gap-4">
+                  <div className="col-span-2">
+                    <ImageSkeleton className="h-40 w-11/12 mx-auto" />
+                  </div>
+                  <div className="col-span-3">
+                    <ParagraphSkeleton line={6} />
+                  </div>
+                </div>
+              ) : (
+                <div className="float-left mr-4 w-1/3">
+                  <div className="bg-yellow-100 p-2">
+                    {features && features[0]?.image && (
+                      <Image
+                        priority
+                        src={
+                          features
+                            ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${features[0]?.image}`
+                            : '/feature.jpg'
+                        }
+                        alt="school building"
+                        width={150}
+                        height={100}
+                        className="w-full h-28 my-2"
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div>
-                <h3 className="text-base font-medium mb-1">মাসিক সংবর্ধনা....</h3>
-                <p className="text-xs text-gray-500 mb-1">Published: May 29, 2022</p>
-                <p className="text-sm mb-3">
-                  বিদ্যালয়ের কর্মকর্তাদের সম্মানিত বাবা-মা সন্তানদের সকলকে জানাচ্ছি যেমন ভাবে আগে
-                  বলা হয়েছে যে প্রতিষ্ঠানে ভর্তিকৃত শিক্ষার্থীদের মাসিক সংবর্ধনা অনুষ্ঠান হয়েছে।
-                  এক নজরে বিয়ানীবাজার জামেয়া ইসলামিয়া উচ্চ বিদ্যালয় পড় তোমার রবের নামে যিনি
-                  তোমাকে সৃষ্টি করেছেন।
-                </p>
-                <a
-                  href="#"
-                  className="text-nowrap bg-yellow-400 text-xs px-2 py-1 rounded-full inline-block"
-                >
-                  Read More →
-                </a>
+                {isFeaturesLoading ? (
+                  <p className="text-sm mb-3">
+                    <ParagraphSkeleton line={6} />
+                  </p>
+                ) : (
+                  <p className="text-sm mb-3">
+                    {features && features[0]?.description.slice(0, 450)}...
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -169,61 +230,50 @@ const Home = () => {
           <div className="shadow-xl shadow-primary_school/10 border border-primary_school">
             <h2 className="heading">News & Events</h2>
             <div className="">
-              {/* News Item 1 */}
-              <div className="p-4 overflow-hidden">
-                <Image
-                  src={'/feature.jpg'}
-                  alt="News event"
-                  width={150}
-                  height={120}
-                  className="float-left mr-4 w-1/3 h-auto object-cover border border-gray-200"
-                />
-                <div>
-                  <h3 className="text-base font-medium mb-1">মাসিক সংবর্ধনা....</h3>
-                  <p className="text-xs text-gray-500 mb-1">Published: May 29, 2022</p>
-                  <p className="text-sm mb-3">
-                    বিদ্যালয়ের কর্মকর্তাদের সম্মানিত বাবা-মা সন্তানদের সকলকে জানাচ্ছি যেমন ভাবে আগে
-                    বলা হয়েছে যে প্রতিষ্ঠানে ভর্তিকৃত শিক্ষার্থীদের মাসিক সংবর্ধনা অনুষ্ঠান হয়েছে।
-                    এক নজরে বিয়ানীবাজার জামেয়া ইসলামিয়া উচ্চ বিদ্যালয় পড় তোমার রবের নামে যিনি
-                    তোমাকে সৃষ্টি করেছেন।
-                  </p>
-                  <a
-                    href="#"
-                    className="text-nowrap bg-yellow-400 text-xs px-2 py-1 rounded-full inline-block"
-                  >
-                    Read More →
-                  </a>
+              {isNewsEventsLoading ? (
+                <div className="p-4 overflow-hidden grid grid-cols-5 gap-4">
+                  <div className="col-span-2">
+                    <ImageSkeleton className="h-40 w-11/12 mx-auto" />
+                  </div>
+                  <div className="col-span-3">
+                    <ParagraphSkeleton line={6} />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <Link href={'/about/news-events'}>
+                  {schoolEvents?.slice(0, 2).map((sEvent, idx) => (
+                    <div
+                      className={cn(
+                        'p-4 overflow-hidden',
+                        idx !== schoolEvents?.length && 'border-b',
+                      )}
+                      key={idx}
+                    >
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${sEvent ? sEvent?.image : 'logo/logo.jpg'}`}
+                        alt="News event"
+                        width={150}
+                        height={120}
+                        className="float-left mr-4 w-1/3 h-2/3 object-cover border border-gray-200"
+                      />
+                      <div>
+                        <h3 className="text-base font-medium mb-1">{sEvent?.title}</h3>
+                        <p className="text-xs text-gray-500 mb-1">
+                          Published:{new Date(sEvent?.createdAt).toLocaleDateString()}
+                        </p>
 
-              <div className="border-t border-gray-200 my-3"></div>
-
-              {/* News Item 2 */}
-              <div className="p-4 overflow-hidden">
-                <Image
-                  src={'/feature.jpg'}
-                  alt="News event"
-                  width={150}
-                  height={120}
-                  className="float-left mr-4 w-1/3 h-auto object-cover border border-gray-200"
-                />
-                <div>
-                  <h3 className="text-base font-medium mb-1">মাসিক সংবর্ধনা....</h3>
-                  <p className="text-xs text-gray-500 mb-1">Published: May 29, 2022</p>
-                  <p className="text-sm mb-3">
-                    বিদ্যালয়ের কর্মকর্তাদের সম্মানিত বাবা-মা সন্তানদের সকলকে জানাচ্ছি যেমন ভাবে আগে
-                    বলা হয়েছে যে প্রতিষ্ঠানে ভর্তিকৃত শিক্ষার্থীদের মাসিক সংবর্ধনা অনুষ্ঠান হয়েছে।
-                    এক নজরে বিয়ানীবাজার জামেয়া ইসলামিয়া উচ্চ বিদ্যালয় পড় তোমার রবের নামে যিনি
-                    তোমাকে সৃষ্টি করেছেন।
-                  </p>
-                  <a
-                    href="#"
-                    className="text-nowrap bg-yellow-400 text-xs px-2 py-1 rounded-full inline-block"
-                  >
-                    Read More →
-                  </a>
-                </div>
-              </div>
+                        <p className="text-sm mb-3">{sEvent?.description.slice(0, 450)}...</p>
+                        <a
+                          href="#"
+                          className="text-nowrap bg-yellow-400 text-xs px-2 py-1 rounded-full inline-block"
+                        >
+                          Read More →
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </Link>
+              )}
             </div>
           </div>
 
@@ -231,65 +281,69 @@ const Home = () => {
           <div className="shadow-xl shadow-primary_school/10 border border-primary_school">
             <h2 className="heading">Achievements</h2>
             <div className="">
-              {/* Achievement Item 1 */}
-              <div className="p-4 overflow-hidden">
-                <Image
-                  src={'/feature.jpg'}
-                  alt="News event"
-                  width={150}
-                  height={120}
-                  className="float-left mr-4 w-1/3 h-auto object-cover border border-gray-200"
-                />
-                <div>
-                  <h3 className="text-base font-medium mb-1">মাসিক সংবর্ধনা....</h3>
-                  <p className="text-xs text-gray-500 mb-1">Published: May 29, 2022</p>
-                  <p className="text-sm mb-3">
-                    বিদ্যালয়ের কর্মকর্তাদের সম্মানিত বাবা-মা সন্তানদের সকলকে জানাচ্ছি যেমন ভাবে আগে
-                    বলা হয়েছে যে প্রতিষ্ঠানে ভর্তিকৃত শিক্ষার্থীদের মাসিক সংবর্ধনা অনুষ্ঠান হয়েছে।
-                    এক নজরে বিয়ানীবাজার জামেয়া ইসলামিয়া উচ্চ বিদ্যালয় পড় তোমার রবের নামে যিনি
-                    তোমাকে সৃষ্টি করেছেন।
-                  </p>
-                  <a
-                    href="#"
-                    className="text-nowrap bg-yellow-400 text-xs px-2 py-1 rounded-full inline-block"
-                  >
-                    Read More →
-                  </a>
+              {isAchievementsLoading ? (
+                <div className="p-4 overflow-hidden grid grid-cols-5 gap-4">
+                  <div className="col-span-2">
+                    <ImageSkeleton className="h-40 w-11/12 mx-auto" />
+                  </div>
+                  <div className="col-span-3">
+                    <ParagraphSkeleton line={6} />
+                  </div>
                 </div>
-              </div>
-
-              <div className="border-t border-gray-200 my-3"></div>
-
-              {/* Achievement Item 2 */}
-              <div className="p-4 overflow-hidden">
-                <Image
-                  src={'/feature.jpg'}
-                  alt="News event"
-                  width={150}
-                  height={120}
-                  className="float-left mr-4 w-1/3 h-auto object-cover border border-gray-200"
-                />
-                <div>
-                  <h3 className="text-base font-medium mb-1">মাসিক সংবর্ধনা....</h3>
-                  <p className="text-xs text-gray-500 mb-1">Published: May 29, 2022</p>
-                  <p className="text-sm mb-3">
-                    বিদ্যালয়ের কর্মকর্তাদের সম্মানিত বাবা-মা সন্তানদের সকলকে জানাচ্ছি যেমন ভাবে আগে
-                    বলা হয়েছে যে প্রতিষ্ঠানে ভর্তিকৃত শিক্ষার্থীদের মাসিক সংবর্ধনা অনুষ্ঠান হয়েছে।
-                    এক নজরে বিয়ানীবাজার জামেয়া ইসলামিয়া উচ্চ বিদ্যালয় পড় তোমার রবের নামে যিনি
-                    তোমাকে সৃষ্টি করেছেন।
-                  </p>
-                  <a
-                    href="#"
-                    className="text-nowrap bg-yellow-400 text-xs px-2 py-1 rounded-full inline-block"
-                  >
-                    Read More →
-                  </a>
-                </div>
-              </div>
-
-              <div className="border-t border-gray-200 my-3"></div>
-
-              {/* Achievement Item 3 */}
+              ) : (
+                <Link href={'/about/achievements'}>
+                  {achievements?.slice(0, 2).map((achievement, idx) => (
+                    <div
+                      className={cn(
+                        'p-4 overflow-hidden',
+                        idx !== 0 && 'border-t border-gray-200 mt-3',
+                      )}
+                      key={achievement._id}
+                    >
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${achievement.image}`}
+                        alt={achievement.title}
+                        width={150}
+                        height={120}
+                        className="float-left mr-4 w-1/3 h-auto object-cover border border-gray-200"
+                        onError={(e) => {
+                          e.currentTarget.src = '/placeholder.svg?height=120&width=150';
+                        }}
+                      />
+                      <div>
+                        <h3 className="text-base font-medium mb-1">{achievement.title}</h3>
+                        <div className="flex gap-2 mb-1">
+                          <p className="text-xs text-gray-500">
+                            {achievement.category && (
+                              <span className="capitalize bg-yellow-100 px-2 py-0.5 rounded-full">
+                                {achievement.category}
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {achievement.year && (
+                              <span className="bg-blue-100 px-2 py-0.5 rounded-full">
+                                {achievement.year}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                        <p className="text-sm mb-3">
+                          {achievement.description.length > 200
+                            ? `${achievement.description.slice(0, 200)}...`
+                            : achievement.description}
+                        </p>
+                        <a
+                          href={`/about/achievements/${achievement._id}`}
+                          className="text-nowrap bg-yellow-400 text-xs px-2 py-1 rounded-full inline-block"
+                        >
+                          Read More →
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -335,29 +389,7 @@ const Home = () => {
         <div className="w-full h-0.5 bg-gray-200"></div>
 
         {/* Gallery */}
-        <div className="py-4">
-          <h2 className="heading">গ্যালারি</h2>
-          <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border border-primary_school">
-              <Image
-                src={'/1653844463.jpg'}
-                alt="gallery"
-                width={400}
-                height={300}
-                className="w-full h-auto"
-              />
-            </div>
-            <div className="border border-primary_school">
-              <Image
-                src={'/1653844463.jpg'}
-                alt="gallery"
-                width={400}
-                height={300}
-                className="w-full h-auto"
-              />
-            </div>
-          </div>
-        </div>
+        <ImageNVideoGallery />
       </section>
     </section>
   );
