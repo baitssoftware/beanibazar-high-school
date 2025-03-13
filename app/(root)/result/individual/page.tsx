@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import axiosRequest from '@/hooks/axiosRequest';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -47,6 +47,29 @@ interface StudentResultParams {
   school_code: number;
 }
 
+interface SchoolInfo {
+  classes: string[];
+  sections: string[];
+  academic_years: string[];
+  exam_names: string[];
+}
+
+// Custom hook for fetching school info
+const useGetSchoolInfo = (school_code: number) => {
+  return useQuery<SchoolInfo>({
+    queryKey: ['schoolInfo', school_code],
+    queryFn: async () => {
+      const response = await axiosRequest({
+        url: `/api/schoolInfo-for-result`,
+        method: 'GET',
+        params: { school_code },
+        baseURL: 'https://academichelperbd.com',
+      });
+      return response.data;
+    },
+  });
+};
+
 // Custom hook for fetching student results
 const useGetStudentResult = () => {
   return useMutation<SubjectResult[], Error, StudentResultParams>({
@@ -76,11 +99,11 @@ const processResults = (results: SubjectResult[]) => {
   let totalGPA = 0;
 
   results.forEach((result) => {
-    totalMarks += parseInt(result.total_marks) || 0;
-    totalGPA += parseFloat(result.gpa) || 0;
+    totalMarks += Number.parseInt(result.total_marks) || 0;
+    totalGPA += Number.parseFloat(result.gpa) || 0;
   });
 
-  const averageGPA = parseFloat((totalGPA / results.length).toFixed(2));
+  const averageGPA = Number.parseFloat((totalGPA / results.length).toFixed(2));
 
   // Determine overall grade based on average GPA
   let overallGrade = 'F';
@@ -122,6 +145,13 @@ const processResults = (results: SubjectResult[]) => {
 const IndividualResult = () => {
   const [processedResult, setProcessedResult] = useState<any>(null);
   const [responseError, setError] = useState<any>('');
+  const schoolCode = 10124; // Using the same school code as in the section-wise component
+
+  const {
+    data: schoolInfo,
+    isLoading: isLoadingSchoolInfo,
+    error: schoolInfoError,
+  } = useGetSchoolInfo(schoolCode);
 
   const form = useForm({
     defaultValues: {
@@ -135,11 +165,8 @@ const IndividualResult = () => {
   const { mutate, isPending, error, isError } = useGetStudentResult();
 
   const onSubmit = (values: any) => {
-    // Format the exam name to match API expectations
-    const formattedExamName = values.examName
-      .split('-')
-      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+    // Use the exam name directly
+    const formattedExamName = values.examName;
 
     // Call the mutation
     mutate(
@@ -147,7 +174,7 @@ const IndividualResult = () => {
         student_id: values.studentId,
         exam_name: formattedExamName,
         year: values.academicYear,
-        school_code: 124,
+        school_code: schoolCode,
       },
       {
         onSuccess: (data) => {
@@ -156,7 +183,6 @@ const IndividualResult = () => {
         },
         onError: (err) => {
           setError(err.message);
-
           console.error('Error fetching results:', err);
         },
       },
@@ -164,10 +190,22 @@ const IndividualResult = () => {
   };
 
   const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+  const schoolInfoErrorMessage =
+    schoolInfoError instanceof Error
+      ? schoolInfoError.message
+      : 'An error occurred loading school information';
 
   return (
     <div className=" p-4">
       <h2 className="heading">Individual Result</h2>
+
+      {/* Show error if school info fails to load */}
+      {schoolInfoError && (
+        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
+          {schoolInfoErrorMessage}
+        </div>
+      )}
+
       <Form {...form}>
         <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 md:grid-cols-4 items-end py-2 pb-6">
@@ -194,7 +232,7 @@ const IndividualResult = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-xs ps-1">Select Exam Name*</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="rounded-none py-6 placeholder:opacity-50">
                         <SelectValue
@@ -204,12 +242,17 @@ const IndividualResult = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="half-yearly-exam">Half Yearly Exam</SelectItem>
-                      <SelectItem value="annual-exam">Annual Exam</SelectItem>
-                      <SelectItem value="pre-test-exam">Pre-Test Exam</SelectItem>
-                      <SelectItem value="test-exam">Test Exam</SelectItem>
-                      <SelectItem value="2nd-assessment-exam">2nd Assessment Exam</SelectItem>
-                      <SelectItem value="final-exam">Final Exam</SelectItem>
+                      {isLoadingSchoolInfo ? (
+                        <SelectItem value="loading">Loading...</SelectItem>
+                      ) : schoolInfo?.exam_names && schoolInfo.exam_names.length > 0 ? (
+                        schoolInfo.exam_names.map((exam) => (
+                          <SelectItem key={exam} value={exam.toLowerCase()}>
+                            {exam}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-exams">No exam names available</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </FormItem>
@@ -221,7 +264,7 @@ const IndividualResult = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-xs ps-1">Select Academic Year*</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="rounded-none py-6 md:border-x-0 placeholder:opacity-50">
                         <SelectValue
@@ -231,20 +274,28 @@ const IndividualResult = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="2018">2018</SelectItem>
-                      <SelectItem value="2019">2019</SelectItem>
-                      <SelectItem value="2020">2020</SelectItem>
-                      <SelectItem value="2021">2021</SelectItem>
-                      <SelectItem value="2022">2022</SelectItem>
-                      <SelectItem value="2023">2023</SelectItem>
-                      <SelectItem value="2024">2024</SelectItem>
+                      {isLoadingSchoolInfo ? (
+                        <SelectItem value="loading">Loading...</SelectItem>
+                      ) : schoolInfo?.academic_years && schoolInfo.academic_years.length > 0 ? (
+                        schoolInfo.academic_years.map((year) => (
+                          <SelectItem key={year} value={year}>
+                            {year}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-years">No academic years available</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </FormItem>
               )}
             />
 
-            <Button className="rounded-none py-[25px] w-full" type="submit" disabled={isPending}>
+            <Button
+              className="rounded-none py-[25px] w-full"
+              type="submit"
+              disabled={isPending || isLoadingSchoolInfo}
+            >
               {isPending ? 'Searching...' : 'Search'}
             </Button>
           </div>
