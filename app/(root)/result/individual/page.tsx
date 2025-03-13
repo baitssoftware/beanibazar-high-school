@@ -121,6 +121,7 @@ const processResults = (results: SubjectResult[]) => {
 
 const IndividualResult = () => {
   const [processedResult, setProcessedResult] = useState<any>(null);
+  const [responseError, setError] = useState<any>('');
 
   const form = useForm({
     defaultValues: {
@@ -146,7 +147,7 @@ const IndividualResult = () => {
         student_id: values.studentId,
         exam_name: formattedExamName,
         year: values.academicYear,
-        school_code: 10106,
+        school_code: 124,
       },
       {
         onSuccess: (data) => {
@@ -154,6 +155,8 @@ const IndividualResult = () => {
           setProcessedResult(processed);
         },
         onError: (err) => {
+          setError(err.message);
+
           console.error('Error fetching results:', err);
         },
       },
@@ -251,7 +254,7 @@ const IndividualResult = () => {
       {/* Error message */}
       {isError && (
         <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
-          {errorMessage}
+          {responseError || errorMessage}
         </div>
       )}
 
