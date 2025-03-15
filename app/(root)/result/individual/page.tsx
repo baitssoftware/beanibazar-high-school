@@ -145,7 +145,7 @@ const processResults = (results: SubjectResult[]) => {
 const IndividualResult = () => {
   const [processedResult, setProcessedResult] = useState<any>(null);
   const [responseError, setError] = useState<any>('');
-  const schoolCode = 10124; // Using the same school code as in the section-wise component
+  const schoolCode = 10120; // Using the same school code as in the section-wise component
 
   const {
     data: schoolInfo,
