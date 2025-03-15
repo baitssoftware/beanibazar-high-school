@@ -14,9 +14,10 @@ import { useCallback, useEffect, useState } from 'react';
 
 interface IChairmanMessage {
   _id: string;
+  name: string;
+  designation?: string; // <-- Added designation field
   message: string;
   image: string;
-  name: string;
   facebookURL?: string;
   instagramURL?: string;
   tweeterURL?: string;
@@ -36,6 +37,7 @@ const EditableChairmanMessage = () => {
   const [chairmanMessage, setChairmanMessage] = useState<IChairmanMessage>({
     _id: '',
     name: '',
+    designation: '',
     message: '',
     image: '',
     facebookURL: '',
@@ -126,6 +128,9 @@ const EditableChairmanMessage = () => {
             className="mx-auto h-96 object-cover rounded-t-lg"
           />
           <h2 className="text-xl font-semibold pb-4 text-center pt-2">{chairmanMessage.name}</h2>
+          <h2 className="text-sm font-semibold pb-4 text-center pt-2">
+            {chairmanMessage?.designation}
+          </h2>
           <div className="flex space-x-4 text-white mx-auto items-center justify-center pb-6">
             {chairmanMessage.facebookURL && (
               <Link
@@ -191,6 +196,17 @@ const EditableChairmanMessage = () => {
                 className="mt-2"
               />
             </div>
+            <div>
+              <Label htmlFor="designation">Designation</Label>
+              <Input
+                id="designation"
+                name="designation"
+                value={chairmanMessage.designation || ''}
+                onChange={handleInputChange}
+                className="mt-2"
+              />
+            </div>
+
             <div>
               <Label htmlFor="message">Message</Label>
               <Textarea

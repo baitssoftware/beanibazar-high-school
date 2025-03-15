@@ -17,6 +17,7 @@ interface IPrincipalMessage {
   message: string;
   image: string;
   name: string;
+  designation?: string;
   facebookURL?: string;
   instagramURL?: string;
   twitterURL?: string;
@@ -36,6 +37,7 @@ const PrincipalMessage = () => {
     name: '',
     message: '',
     image: '',
+    designation: '',
     facebookURL: '',
     instagramURL: '',
     twitterURL: '',
@@ -124,6 +126,9 @@ const PrincipalMessage = () => {
             className="mx-auto h-72 object-cover rounded-t-lg"
           />
           <h2 className="text-xl font-semibold pb-4 text-center pt-2">{principalMessage.name}</h2>
+          <h2 className="text-sm font-semibold pb-4 text-center pt-2">
+            {principalMessage?.designation}
+          </h2>
           <div className="flex space-x-4 text-white mx-auto items-center justify-center pb-6">
             {principalMessage.facebookURL && (
               <Link
@@ -185,6 +190,16 @@ const PrincipalMessage = () => {
                 id="name"
                 name="name"
                 value={principalMessage.name}
+                onChange={handleInputChange}
+                className="mt-2"
+              />
+            </div>
+            <div>
+              <Label htmlFor="designation">Designation</Label>
+              <Input
+                id="designation"
+                name="designation"
+                value={principalMessage.designation || ''}
                 onChange={handleInputChange}
                 className="mt-2"
               />
