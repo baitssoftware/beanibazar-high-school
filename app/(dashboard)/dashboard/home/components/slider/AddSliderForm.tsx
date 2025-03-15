@@ -22,6 +22,7 @@ import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 interface FormValues {
+  title: string;
   status: 'active' | 'inactive';
   image: FileList;
 }
@@ -44,6 +45,7 @@ export const AddSliderModal: React.FC<AddSliderModalProps> = ({ onAdd, disabled 
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const formData = new FormData();
+    formData.append('title', data.title);
     formData.append('status', data.status);
     if (data.image && data.image.length > 0) {
       formData.append('image', data.image[0]);
@@ -74,6 +76,15 @@ export const AddSliderModal: React.FC<AddSliderModalProps> = ({ onAdd, disabled 
           <DialogDescription>Fill in the details to add a new slider.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="title">Title</Label>
+            <Input
+              id="title"
+              type="text"
+              {...register('title', { required: 'Title is required' })}
+            />
+            {errors.title && <p className="text-xs text-red-500">{errors.title.message}</p>}
+          </div>
           <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
             <Select onValueChange={(value) => setValue('status', value as 'active' | 'inactive')}>

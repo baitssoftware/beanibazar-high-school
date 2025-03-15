@@ -14,6 +14,7 @@ import { AddSliderModal } from './AddSliderForm';
 interface SliderDataBase {
   image: any;
   status: 'active' | 'inactive';
+  title?: string;
 }
 
 // Extended interface that includes ID (for responses from backend)
@@ -151,6 +152,15 @@ const EditableSlider: React.FC = () => {
             disabled={isUpdating}
           />
         </FormControl>
+      ),
+    },
+    {
+      title: 'Title',
+      dataKey: 'title',
+      row: (data: SliderData) => (
+        <div className="">
+          <p>{data?.title}</p>
+        </div>
       ),
     },
     {
