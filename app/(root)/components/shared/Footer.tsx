@@ -142,7 +142,7 @@ export default function Footer() {
                   {isLoading ? (
                     <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 "></div>
                   ) : (
-                    <span>Beanibazar Jamia Islamia High School</span>
+                    <span>{headerData && headerData[0].school_name}</span>
                   )}
                 </div>
               </li>

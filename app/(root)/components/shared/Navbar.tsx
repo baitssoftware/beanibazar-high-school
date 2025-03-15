@@ -63,7 +63,7 @@ export default function Navbar() {
                 {isLoading ? (
                   <TitleSkeleton className="h-5 w-60" />
                 ) : (
-                  <h1>Beanibazar Ideal Madrasah</h1>
+                  <h1>{headerData && headerData[0]?.school_name}</h1>
                 )}
               </div>
               <div className="">
