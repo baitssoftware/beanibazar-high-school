@@ -87,7 +87,7 @@ const useGetSchoolInfo = (school_code: number) => {
 const SectionWiseResult = () => {
   const [results, setResults] = useState<StudentResult[]>([]);
   const [responseError, setError] = useState<any>('');
-  const schoolCode = 10124;
+  const schoolCode = 10120;
   const {
     data: schoolInfo,
     isLoading: isLoadingSchoolInfo,
