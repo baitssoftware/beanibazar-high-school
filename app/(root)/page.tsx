@@ -46,6 +46,7 @@ interface ChairmanMessage {
   message: string;
   image: string;
   name: string;
+  designation?: string;
   facebookURL?: string;
   instagramURL?: string;
   tweeterURL?: string;
@@ -56,6 +57,7 @@ interface PrincipalMessage {
   message: string;
   image: string;
   name: string;
+  designation?: string;
   facebookURL?: string;
   instagramURL?: string;
   tweeterURL?: string;
@@ -135,13 +137,13 @@ const Home = () => {
                 />
               )}
 
-              <p className="text-sm px-2">
+              <p className="text-sm  font-semibold px-2">
                 {isChairmanLoading ? (
                   <TitleSkeleton className="h-5 w-60" />
                 ) : (
                   <h1>{chairmanMessage?.name}</h1>
                 )}
-                চেয়ারম্যান, জিলালুল কুরআন সোসাইটি
+                {chairmanMessage?.designation}
               </p>
             </div>
             {/* Divider */}
@@ -163,13 +165,13 @@ const Home = () => {
                 />
               )}
 
-              <p className="text-sm px-2">
+              <p className="text-sm font-semibold  px-2">
                 {isPrincipalLoading ? (
                   <TitleSkeleton className="h-5 w-60" />
                 ) : (
                   <h1>{principalMessage?.name}</h1>
                 )}
-                প্রধান শিক্ষক
+                {principalMessage?.designation}
               </p>
             </div>
           </div>

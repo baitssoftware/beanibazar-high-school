@@ -20,6 +20,7 @@ interface SliderData {
   _id: string;
   image: string;
   status: string;
+  title: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -76,6 +77,17 @@ export default function ImageSlider() {
       ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${activeImages[currentIndex]}`
       : fallbackImages[0];
   };
+  const getCurrentSlide = () => {
+    const currentSlide = activeImages[currentIndex]
+      ? sliderData?.find((slide) => slide.image === activeImages[currentIndex])
+      : null;
+    return currentSlide
+      ? {
+          imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_URL}/${currentSlide.image}`,
+          title: currentSlide.title,
+        }
+      : { imageUrl: fallbackImages[0], title: '' };
+  };
 
   return (
     <div className="relative w-full h-[460px] overflow-hidden">
@@ -115,10 +127,12 @@ export default function ImageSlider() {
           </motion.div>
         </AnimatePresence>
       </div>
-      <div className="h-12 bg-black/30 absolute bottom-0 w-full text-xs p-2 text-white overflow-ellipsis">
-        এক নজরে বিয়ানীবাজার জামেয়া ইসলামিয়া উচ্চ বিদ্যালয় “পড় তোমার রবের নামে যিনি তোমাকে
-        সৃষ্টি করেছেন।
-      </div>
+      {getCurrentSlide()?.title && (
+        <div className="h-12 bg-black/30 absolute bottom-0 w-full text-xs p-2 text-white overflow-ellipsis">
+          {getCurrentSlide()?.title}
+        </div>
+      )}
+
       <button
         onClick={handlePrevious}
         className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-colors"
