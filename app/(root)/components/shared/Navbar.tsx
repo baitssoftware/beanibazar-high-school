@@ -37,6 +37,11 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleNavClick = () => {
+    setIsMobileMenuOpen(false);
+    setActiveMenu(null);
+  };
+
   return (
     <div className="flex flex-col w-full">
       <header
@@ -95,7 +100,7 @@ export default function Navbar() {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-700 hover:text-[#00468C]"
+              className="lg:hidden p-2 rounded-md text-gray-700 hover:text-[#00468C]"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isMobileMenuOpen ? (
@@ -107,7 +112,7 @@ export default function Navbar() {
             </button>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex space-x-1">
+            <div className="hidden lg:flex space-x-1">
               {navigation.mainNav.map((item) => (
                 <div
                   key={item.title}
@@ -159,9 +164,9 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Mobile Navigation */}
+            {/* Mobile/Tablet Navigation */}
             <div 
-              className={`absolute top-full left-0 right-0 bg-white border-b shadow-lg md:hidden transition-all duration-300 ${
+              className={`absolute top-full left-0 right-0 bg-white border-b shadow-lg lg:hidden transition-all duration-300 ${
                 isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
               }`}
               style={{ zIndex: 40 }}
@@ -179,6 +184,7 @@ export default function Navbar() {
                   ) : (
                     <Link
                       href={item.href || '#'}
+                      onClick={handleNavClick}
                       className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-[#00468C] hover:text-white"
                     >
                       {item.title}
@@ -190,6 +196,7 @@ export default function Navbar() {
                         <Link
                           key={subItem.title}
                           href={subItem.href}
+                          onClick={handleNavClick}
                           className="block px-6 py-2 text-sm text-gray-700 hover:bg-[#00468C] hover:text-white"
                         >
                           {subItem.title}
@@ -199,7 +206,7 @@ export default function Navbar() {
                   )}
                 </div>
               ))}
-              {/* Mobile Login and Application buttons */}
+              {/* Mobile/Tablet Login and Application buttons */}
               <div className="border-t py-2">
                 <button
                   onClick={() => setActiveMenu(activeMenu === 'login' ? null : 'login')}
@@ -210,11 +217,21 @@ export default function Navbar() {
                 </button>
                 {activeMenu === 'login' && (
                   <div className="bg-gray-50">
-                    {/* ... existing login menu items ... */}
+                    <a
+                      href="https://academichelperbd.com/login"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={handleNavClick}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#00468C] hover:text-white"
+                    >
+                      Student/Guardian Login
+                    </a>
+                    {/* ... existing login items with onClick={handleNavClick} ... */}
                   </div>
                 )}
                 <Link
                   href="/apply"
+                  onClick={handleNavClick}
                   className="block px-4 py-2 text-sm font-medium text-red-600"
                 >
                   ONLINE APPLICATION
@@ -223,7 +240,7 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Login and Application buttons */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-4">
               <div
                 className="relative"
                 onMouseEnter={() => setActiveMenu('login')}
