@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
       'dstqm.nedubd.com',
        'alaminabn.com',
        '62.72.30.40',
+       '62.72.30.40:3008',
+       '62.72.30.40:3007',
        'bbimadrasah.org',
       'backend-beanibazar-ideal-madrasah.vercel.app'], 
 
