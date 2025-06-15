@@ -14,26 +14,39 @@ jobs:
       - name: 📥 Checkout Code
         uses: actions/checkout@v3
 
-      - name: 🔐 Setup SSH with Custom Key Name
+      - name: 🔐 Setup SSH with Custom Key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_github_deploy
           chmod 600 ~/.ssh/id_rsa_github_deploy
-          
-          # SSH config specifying custom key
+
+          # SSH config
           echo "Host my-vps
             HostName ${{ secrets.SSH_HOST }}
             User ${{ secrets.SSH_USER }}
             IdentityFile ~/.ssh/id_rsa_github_deploy
             StrictHostKeyChecking no
           " > ~/.ssh/config
-          
-          # Add host to known_hosts to avoid manual confirmation
+
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: 🚀 Connect and Pull from VPS
+      - name: 🚀 Deploy to Both App Instances
         run: |
-          ssh my-vps "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && npm install && npm run build && pm2 restart all"
+          ssh my-vps "
+            # App 1
+            cd /home/ubuntu/beanibazar-high-school && \
+            git pull && \
+            npm install && \
+            npm run build && \
+            pm2 restart 4 && \
+
+            # App 2
+            cd /home/ubuntu/alamin-madrasa/beanibazar-high-school && \
+            git pull && \
+            npm install && \
+            npm run build && \
+            pm2 restart 6
+          "
 
       - name: 🧹 Cleanup SSH
         run: rm -rf ~/.ssh
