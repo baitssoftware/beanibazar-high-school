@@ -12,9 +12,9 @@ interface BackendError {
   stack?: string;
 }
 
-const TIMEOUT = 30000; // 30 seconds
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000; // 1 second
+const TIMEOUT = 300000000; // 30 seconds
+const MAX_RETRIES = 0;
+const RETRY_DELAY = 10000000; // 1 second
 
 // Configure axios defaults
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5501/api/v1';

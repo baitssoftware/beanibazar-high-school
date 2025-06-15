@@ -50,6 +50,8 @@ export const useGetList = <T>(endpoint: string, queryKey: string, options: ApiHo
       });
       return response.data;
     },
+    refetchInterval: false, // এটি যোগ করুন
+    refetchOnWindowFocus: false, // এটিও যোগ করুন
     ...options,
   });
 };

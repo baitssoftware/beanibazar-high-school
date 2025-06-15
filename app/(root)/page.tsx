@@ -66,6 +66,7 @@ interface PrincipalMessage {
 
 const Home = () => {
   const { data: historyData, isLoading } = useGetList<HistoryData>('/history', 'history');
+  // console.log(historyData);
   const history = historyData && historyData[0];
   const { data: features, isLoading: isFeaturesLoading } = useGetList<Feature>(
     '/features',
@@ -114,6 +115,8 @@ const Home = () => {
   //     </div>
   //   );
   // }
+  // console.log(process.env.NEXT_PUBLIC_IMAGE_URL);
+  // console.log(chairmanMessage?.image);
   return (
     <section>
       <NoticeSection />
@@ -124,15 +127,12 @@ const Home = () => {
               {isChairmanLoading ? (
                 <ImageSkeleton className="h-32 w-auto mb-4" />
               ) : (
-                <Image
+                <img
                   src={
                     `${process.env.NEXT_PUBLIC_IMAGE_URL}/${chairmanMessage?.image}` ||
                     '/placeholder.svg'
                   }
-                  priority
                   alt={`Image of ${chairmanMessage?.name}`}
-                  width={100}
-                  height={100}
                   className="h-32 w-auto mb-4"
                 />
               )}
