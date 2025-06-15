@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
       'api.shinystepsedu.com',
       'test.bamsbd.com',
       'dstqm.nedubd.com',
+       'alaminabn.com',
+       '62.72.30.40',
+       'bbimadrasah.org',
       'backend-beanibazar-ideal-madrasah.vercel.app'], 
 
     remotePatterns: [
