@@ -16,7 +16,7 @@ jobs:
 
       - name: 🔐 Install SSH
         run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          install -m 600 -D /dev/null ~/.ssh/id_rsa_github_deploy
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_github_deploy
           chmod 600 ~/.ssh/id_rsa_github_deploy
           ssh-keyscan -H your.server.ip >> ~/.ssh/known_hosts
