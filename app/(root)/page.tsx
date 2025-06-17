@@ -4,7 +4,6 @@ import ParagraphSkeleton from '@/components/shared/skeleton/ParagraphSkeleton';
 import TitleSkeleton from '@/components/shared/skeleton/TitleSkeleton';
 import { useGetList } from '@/hooks/APIHooks';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import Link from 'next/link';
 import AllNotices from './components/home/AllNotice';
 import ImageNVideoGallery from './components/home/ImageNVideoGallery';
@@ -127,10 +126,10 @@ const Home = () => {
               {isChairmanLoading ? (
                 <ImageSkeleton className="h-32 w-auto mb-4" />
               ) : (
+                // Converted Image to img
                 <img
                   src={
-                    `${process.env.NEXT_PUBLIC_IMAGE_URL}/${chairmanMessage?.image}` ||
-                    '/placeholder.svg'
+                    `${process.env.NEXT_PUBLIC_IMAGE_URL}/${chairmanMessage?.image}` 
                   }
                   alt={`Image of ${chairmanMessage?.name}`}
                   className="h-32 w-auto mb-4"
@@ -152,11 +151,10 @@ const Home = () => {
               {isPrincipalLoading ? (
                 <ImageSkeleton className="h-32 w-auto mb-4" />
               ) : (
-                <Image
-                  priority
+                // Converted Image to img, removed priority
+                <img
                   src={
-                    `${process.env.NEXT_PUBLIC_IMAGE_URL}/${principalMessage?.image}` ||
-                    '/placeholder.svg'
+                    `${process.env.NEXT_PUBLIC_IMAGE_URL}/${principalMessage?.image}` 
                   }
                   alt={principalMessage?.name || 'Principal'}
                   width={100}
@@ -193,7 +191,8 @@ const Home = () => {
           <div className="col-span-12 md:col-span-3 shadow-xl shadow-primary_school/10 border border-primary_school">
             <div className="">
               <h2 className="heading">Emergency Hotline</h2>
-              <Image
+              {/* Converted Image to img */}
+              <img
                 src={'/hotlineseba.png'}
                 alt="notice"
                 width={100}
@@ -224,8 +223,8 @@ const Home = () => {
                 <div className="float-left mr-4 w-1/3">
                   <div className="bg-yellow-100 p-2">
                     {history?.image && (
-                      <Image
-                        priority
+                      // Converted Image to img, removed priority
+                      <img
                         src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${history.image}`}
                         alt="school building"
                         width={150}
@@ -274,8 +273,8 @@ const Home = () => {
                 <div className="float-left mr-4 w-1/3">
                   <div className="bg-yellow-100 p-2">
                     {features && features[0]?.image && (
-                      <Image
-                        priority
+                      // Converted Image to img, removed priority
+                      <img
                         src={
                           features
                             ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${features[0]?.image}`
@@ -331,7 +330,8 @@ const Home = () => {
                       )}
                       key={idx}
                     >
-                      <Image
+                      {/* Converted Image to img */}
+                      <img
                         src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${sEvent ? sEvent?.image : 'logo/logo.jpg'}`}
                         alt="News event"
                         width={150}
@@ -382,15 +382,16 @@ const Home = () => {
                       )}
                       key={achievement._id}
                     >
-                      <Image
+                      {/* Converted Image to img, adapted onError */}
+                      <img
                         src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${achievement.image}`}
                         alt={achievement.title}
                         width={150}
                         height={120}
                         className="float-left mr-4 w-1/3 h-auto object-cover border border-gray-200"
-                        onError={(e) => {
-                          e.currentTarget.src = '/placeholder.svg?height=120&width=150';
-                        }}
+                        // onError={(e) => {
+                        //   e.currentTarget.src = '/placeholder.svg?height=120&width=150';
+                        // }}
                       />
                       <div>
                         <h3 className="text-base font-medium mb-1">{achievement.title}</h3>
