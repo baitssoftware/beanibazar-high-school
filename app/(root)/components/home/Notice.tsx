@@ -43,7 +43,7 @@ const Notice = () => {
 
   if (isLoading) return <div>Loading...</div>;
 
-  if (!notices.length) return <div>No notices available.</div>;
+  if (!notices.length) return <div className='min-h-20 flex justify-center items-center text-lg font-bold italic'>No notices available.</div>;
 
   return (
     <div className="shadow-sm">
