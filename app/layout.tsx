@@ -55,7 +55,7 @@ const anekBangla = localFont({
 });
 
 export const metadata = {
-  title: 'Beanibazar Ideal Madrasah',
+  title: '',
   description:
     'Bangladesh Associate of IT Solution is your trusted partner for comprehensive digital solutions. We specialize in creating tailored websites, managing domains, and providing expert IT services to help businesses grow in the digital world. Sabbir Mohammad Sami',
 };
