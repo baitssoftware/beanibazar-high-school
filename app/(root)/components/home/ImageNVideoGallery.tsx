@@ -24,7 +24,7 @@ const ImageNVideoGallery = () => {
   const videoGallery = videos.map((video) => video.thumbnail); // Ensure you're using correct thumbnail field
 
   return (
-    <div className="grid grid-cols-2 gap-4 pb-16">
+    <div className="grid lg:grid-cols-2 gap-4 pb-16">
       <div>
         <h2 className="heading mb-3">Video Gallery</h2>
         <ThumbnailGallery images={videoGallery} category="video" />
