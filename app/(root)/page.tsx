@@ -121,8 +121,8 @@ const Home = () => {
       <NoticeSection />
       <section className="space-y-6">
         <div className="grid grid-cols-11 gap-4 py-4 ">
-          <div className="col-span-2 text-center border border-primary_school py-2.5 flex flex-col items-center justify-around shadow-xl shadow-primary_school/10">
-            <div className="mx-auto flex flex-col items-center justify-center ">
+          <div className="lg:col-span-2 col-span-11 text-center border border-primary_school py-2.5 flex flex-col items-center gap-2 justify-around shadow-xl shadow-primary_school/10">
+            <div className="mx-auto flex flex-col items-center  justify-center ">
               {isChairmanLoading ? (
                 <ImageSkeleton className="h-32 w-auto mb-4" />
               ) : (
@@ -173,10 +173,10 @@ const Home = () => {
               </p>
             </div>
           </div>
-          <div className="col-span-6 shadow-xl shadow-primary_school/10 border border-primary_school">
+          <div className="lg:col-span-6 col-span-11 shadow-xl shadow-primary_school/10 border border-primary_school">
             <ImageSlider />
           </div>
-          <div className="col-span-3 shadow-xl shadow-primary_school/10 border border-primary_school">
+          <div className="lg:col-span-3 col-span-11 shadow-xl shadow-primary_school/10 border border-primary_school">
             <Notice />
           </div>
         </div>
